@@ -2,10 +2,10 @@
   "name": "stechs-challenge-be",
   "version": "1.0.0",
   "description": "",
-  "main": "server.ts",
+  "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node server.ts"
+    "dev": "node api/index.ts"
   },
   "keywords": [],
   "author": "",
