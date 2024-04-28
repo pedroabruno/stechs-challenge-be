@@ -32,10 +32,12 @@ app.get("/cableModems", (req, res) => {
     })
     const nameFilterId = req.query.name
     const statusFilterId = req.query.status
+    const limit = req.query.limit
+    const offset = req.query.offset
     let cableModems = modems 
     cableModems = nameFilterId ? cableModems.filter(m => m.name === nameFilterId) : cableModems
     cableModems = statusFilterId ? cableModems.filter(m => m.status === statusFilterId) : cableModems
-    CableModem.find({}).then(data=>res.json(data)).catch(e => console.log(e))
+    CableModem.find({}).skip(offset).limit(limit).then(data=>res.json(data)).catch(e => console.log(e))
 });
 
 app.get("/cableModems/:id", (req, res) => {
@@ -49,8 +51,7 @@ app.get("/cableModems/:id", (req, res) => {
 
 app.post("/cableModems", (req, res) => {
     const newModem = req.body
-    const idNumber  = Math.floor(Math.random() * (999 - 1) ) + 1
-    const cableModem = new CableModem({...newModem,id:idNumber});
+    const cableModem = new CableModem({...newModem});
       try {
         cableModem.save();
       } catch (error) {
