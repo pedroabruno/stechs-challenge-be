@@ -5,6 +5,11 @@ var cors = require('cors');
 
 var allowedOrigins = ['http://localhost:3000','https://stechs-challenge-fe.vercel.app'];
 
+const mongoose = require('mongoose')
+const CableModem = require('./models/CableModem')
+const uri = "mongodb+srv://pbruno:VvSZ2HaFfiHTmFWe@cluster0.ovhgudc.mongodb.net/stechs?retryWrites=true&w=majority&appName=cluster0";
+mongoose.connect(uri)
+
 app.use(express.json())
 app.use(cors({
     origin: function(origin, callback){
@@ -30,7 +35,7 @@ app.get("/cableModems", (req, res) => {
     let cableModems = modems 
     cableModems = nameFilterId ? cableModems.filter(m => m.name === nameFilterId) : cableModems
     cableModems = statusFilterId ? cableModems.filter(m => m.status === statusFilterId) : cableModems
-    res.json(cableModems)
+    CableModem.find({}).then(data=>res.json(data)).catch(e => console.log(e))
 });
 
 app.get("/cableModems/:id", (req, res) => {
@@ -44,6 +49,13 @@ app.get("/cableModems/:id", (req, res) => {
 
 app.post("/cableModems", (req, res) => {
     const newModem = req.body
+    const idNumber  = Math.floor(Math.random() * (999 - 1) ) + 1
+    const cableModem = new CableModem({...newModem,id:idNumber});
+      try {
+        cableModem.save();
+      } catch (error) {
+        console.error(error);
+      }    
     res.json(newModem)
 })
 
@@ -55,7 +67,7 @@ app.put("/cableModems/:id", (req, res) => {
 
 app.delete("/cableModems/:id", (req, res) => {
     const cableModemId = req.params.id
-    res.json(modems.filter(m=>m.id !== cableModemId))
+    CableModem.deleteOne({id:cableModemId}).then(data=>res.json(data)).catch(e => console.log(e))
 })
 
 app.listen(3001, () => console.log("Server ready on port 3001."));
