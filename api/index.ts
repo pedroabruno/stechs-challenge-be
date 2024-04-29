@@ -1,6 +1,5 @@
 const express = require('express');
 const app = express();
-const modems = require('./cableModemsExample')
 var cors = require('cors');
 
 var allowedOrigins = ['http://localhost:3000','https://stechs-challenge-fe.vercel.app'];
@@ -28,14 +27,10 @@ app.get("/cableModems", (req, res) => {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
     })
-    const nameFilterId = req.query.name
-    const statusFilterId = req.query.status
     const limit = req.query.limit
     const offset = req.query.offset
-    let cableModems = modems 
-    cableModems = nameFilterId ? cableModems.filter(m => m.name === nameFilterId) : cableModems
-    cableModems = statusFilterId ? cableModems.filter(m => m.status === statusFilterId) : cableModems
-    CableModem.find({}).skip(offset).limit(limit).then(data=>res.json(data)).catch(e => console.log(e))
+    const filters = {...(req.query.name && {name : decodeURIComponent(req.query.name)}), ...(req.query.status && {status : req.query.status})}
+    CableModem.find(filters).skip(offset).limit(limit).then(data=>res.json(data)).catch(e => console.log(e))
 });
 
 app.get("/cableModems/:id", (req, res) => {
@@ -44,7 +39,7 @@ app.get("/cableModems/:id", (req, res) => {
         'Access-Control-Allow-Origin': '*',
     })
     const cableModemId = req.params.id
-    res.json(modems.filter(m=>m.id === cableModemId)[0])
+    CableModem.findById(cableModemId).then(data=>res.json(data)).catch(e => console.log(e))
 });
 
 app.post("/cableModems", (req, res) => {
@@ -60,8 +55,7 @@ app.post("/cableModems", (req, res) => {
 
 app.put("/cableModems/:id", (req, res) => {
     const cableModemId = req.params.id
-    const newCableModem = {id:cableModemId, ...req.body}
-    res.json(newCableModem)
+    CableModem.findByIdAndUpdate(cableModemId, req.body).then(data=>res.json(data)).catch(e => console.log(e))
 })
 
 app.delete("/cableModems/:id", (req, res) => {
