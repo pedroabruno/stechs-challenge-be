@@ -13,8 +13,6 @@ mongoose.connect(uri)
 app.use(express.json())
 app.use(cors({
     origin: function(origin, callback){
-      // allow requests with no origin 
-      // (like mobile apps or curl requests)
       if(!origin) return callback(null, true);
       if(allowedOrigins.indexOf(origin) === -1){
         var msg = 'The CORS policy for this site does not ' +
@@ -68,7 +66,7 @@ app.put("/cableModems/:id", (req, res) => {
 
 app.delete("/cableModems/:id", (req, res) => {
     const cableModemId = req.params.id
-    CableModem.deleteOne({id:cableModemId}).then(data=>res.json(data)).catch(e => console.log(e))
+    CableModem.findByIdAndDelete(cableModemId).then(data=>res.json(data)).catch(e => console.log(e))
 })
 
 app.listen(3001, () => console.log("Server ready on port 3001."));
