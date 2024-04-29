@@ -30,7 +30,15 @@ app.get("/cableModems", (req, res) => {
     const limit = req.query.limit
     const offset = req.query.offset
     const filters = {...(req.query.name && {name : {'$regex': decodeURIComponent(req.query.name)} }), ...(req.query.status && {status : req.query.status})}
-    CableModem.find(filters).skip(offset).limit(limit).then(data=>res.json(data)).catch(e => console.log(e))
+    CableModem.find(filters).skip(offset).limit(limit)
+        .then(documents=>{
+            CableModem.find(filters).count()
+            .then(count=>{
+                res.json({documents, count})
+            })
+        })
+        .catch(e => console.log(e))
+
 });
 
 app.get("/cableModems/:id", (req, res) => {
