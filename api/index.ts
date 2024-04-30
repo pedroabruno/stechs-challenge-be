@@ -53,12 +53,23 @@ app.get("/cableModems/:id", (req, res) => {
 app.post("/cableModems", (req, res) => {
     const newModem = req.body
     const cableModem = new CableModem({...newModem});
-      try {
-        cableModem.save();
-      } catch (error) {
-        console.error(error);
-      }    
-    res.json(newModem)
+    CableModem.exists({name:req.body.name})
+        .then(d=>{
+            if (d){
+                console.log('existing item')
+                res.status(400);
+                res.send('');
+            }else{ 
+                try {
+                    cableModem.save();
+                    res.status(201);
+                    res.send('item created');
+                } catch (error) {
+                    console.error(error);
+                    res.status(400);
+                }   
+            } 
+        }).catch(e => console.log(e))
 })
 
 app.put("/cableModems/:id", (req, res) => {
