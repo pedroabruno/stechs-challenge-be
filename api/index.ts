@@ -29,7 +29,10 @@ app.get("/cableModems", (req, res) => {
     })
     const limit = req.query.limit
     const offset = req.query.offset
-    const filters = {...(req.query.name && {name : {'$regex': decodeURIComponent(req.query.name)} }), ...(req.query.status && {status : req.query.status})}
+    const filters = {...(req.query.name && {
+        name : {'$regex': new RegExp("^" + decodeURIComponent(req.query.name).toLowerCase(), "i")} }), 
+        ...(req.query.status && {status : req.query.status})
+    }
     CableModem.find(filters).skip(offset).limit(limit)
         .then(documents=>{
             CableModem.find(filters).count()
